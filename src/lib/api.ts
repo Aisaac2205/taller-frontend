@@ -25,7 +25,7 @@ const getApiBaseUrl = (): string => {
   
   if (!url || url.trim() === '') {
     console.warn('NEXT_PUBLIC_API_URL no está configurado, usando localhost por defecto');
-    return 'http://localhost:3001/api';
+    return 'http://localhost:3002/api';
   }
   
   // Validar que sea una URL válida
@@ -34,7 +34,7 @@ const getApiBaseUrl = (): string => {
     return url;
   } catch (error) {
     console.error('NEXT_PUBLIC_API_URL no es una URL válida:', url);
-    return 'http://localhost:3001/api';
+    return 'http://localhost:3002/api';
   }
 };
 
