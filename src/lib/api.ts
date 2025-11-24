@@ -3,6 +3,24 @@ import { authStore } from './authStore';
 
 // Validar y obtener la URL del API
 const getApiBaseUrl = (): string => {
+  // En el servidor (SSR), usar la URL interna de Railway si está disponible
+  // En el cliente (navegador), usar la URL pública
+  const isServer = typeof window === 'undefined';
+  
+  if (isServer) {
+    // En el servidor, intentar usar la URL interna primero
+    const internalUrl = process.env.RAILWAY_API_URL_INTERNAL || process.env.API_URL_INTERNAL;
+    if (internalUrl) {
+      try {
+        new URL(internalUrl);
+        return internalUrl;
+      } catch (error) {
+        console.warn('URL interna no válida, usando URL pública:', internalUrl);
+      }
+    }
+  }
+  
+  // Usar la URL pública (funciona tanto en cliente como servidor)
   const url = process.env.NEXT_PUBLIC_API_URL;
   
   if (!url || url.trim() === '') {
