@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply scroll-smooth;
+}
+
+body {
+  @apply bg-tesla-bg text-tesla-text;
+}
+
+input,
+textarea,
+select {
+  @apply bg-tesla-bg text-tesla-text placeholder:text-gray-500;
+}
+
+button:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+

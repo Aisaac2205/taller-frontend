@@ -1,0 +1,7 @@
+[service]
+name = "turboauto-frontend"
+start = "pnpm start"
+
+[envs.production]
+NEXT_PUBLIC_API_URL = "https://turboauto-backend.up.railway.app/api"
+NEXT_PUBLIC_APP_NAME = "Turbo Auto Quesada"
