@@ -37,6 +37,7 @@ export interface Vehiculo {
   anio: number;
   placa: string;
   vin: string;
+  kmActual: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -63,6 +64,10 @@ export interface Servicio {
   estado: 'pendiente' | 'en_progreso' | 'completado' | 'cancelado';
   createdAt: string;
   updatedAt: string;
+  tipo?: 'REEMPLAZO_PIEZA' | 'CAMBIO_ACEITE' | 'GENERAL';
+  proximoCambioKm?: number;
+  proximoCambioFecha?: string;
+  piezaReemplazada?: string;
 }
 
 export interface ProductoServicio {

@@ -11,6 +11,10 @@ export interface CreateServicioRequest {
     productoId: string;
     cantidad: number;
   }>;
+  tipo: 'REEMPLAZO_PIEZA' | 'CAMBIO_ACEITE' | 'GENERAL';
+  proximoCambioKm?: number;
+  proximoCambioFecha?: string;
+  piezaReemplazada?: string;
 }
 
 export const useServicios = (vehiculoId?: string) => {

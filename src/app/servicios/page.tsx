@@ -28,20 +28,26 @@ export default function ServiciosPage() {
     kmRegistrado: 0,
     descripcion: '',
     piezasUsadas: [],
+    tipo: 'GENERAL',
   });
 
   // Permisos basados en roles
   const canCreate = user?.role === 'admin' || user?.role === 'mechanic';
   const canEdit = user?.role === 'admin' || user?.role === 'mechanic';
   const canDelete = user?.role === 'admin';
-  const canView = 
-    user?.role === 'admin' || 
-    user?.role === 'owner' || 
-    user?.role === 'mechanic' || 
+  const canView =
+    user?.role === 'admin' ||
+    user?.role === 'owner' ||
+    user?.role === 'mechanic' ||
     user?.role === 'recepcion';
 
   const handleSubmit = () => {
-    if (!formData.vehiculoId || !formData.clienteId || !formData.descripcion || formData.piezasUsadas.length === 0) {
+    if (!formData.vehiculoId || !formData.clienteId || !formData.descripcion) {
+      return;
+    }
+
+    if (isNaN(formData.kmRegistrado)) {
+      alert('Por favor ingrese un kilometraje válido');
       return;
     }
 
@@ -73,6 +79,7 @@ export default function ServiciosPage() {
       kmRegistrado: 0,
       descripcion: '',
       piezasUsadas: [],
+      tipo: 'GENERAL',
     });
   };
 
@@ -132,42 +139,107 @@ export default function ServiciosPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-tesla-text">
-                    Vehículo
-                  </label>
-                  <select
-                    value={formData.vehiculoId}
-                    onChange={(e) => setFormData({ ...formData, vehiculoId: e.target.value })}
-                    className="mt-1 w-full rounded border border-tesla-border bg-tesla-bg px-3 py-2 text-tesla-text"
-                  >
-                    <option value="">Selecciona un vehículo</option>
-                    {vehiculos.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.marca} {v.modelo} ({v.placa})
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-tesla-text">
+                      Tipo de Servicio
+                    </label>
+                    <select
+                      value={formData.tipo}
+                      onChange={(e) => setFormData({ ...formData, tipo: e.target.value as any })}
+                      className="mt-1 w-full rounded border border-tesla-border bg-tesla-bg px-3 py-2 text-tesla-text"
+                    >
+                      <option value="GENERAL">General</option>
+                      <option value="REEMPLAZO_PIEZA">Reemplazo de Pieza</option>
+                      <option value="CAMBIO_ACEITE">Servicio de Aceite</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-tesla-text">
+                      Vehículo
+                    </label>
+                    <select
+                      value={formData.vehiculoId}
+                      onChange={(e) => setFormData({ ...formData, vehiculoId: e.target.value })}
+                      className="mt-1 w-full rounded border border-tesla-border bg-tesla-bg px-3 py-2 text-tesla-text"
+                    >
+                      <option value="">Selecciona un vehículo</option>
+                      {vehiculos.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.marca} {v.modelo} ({v.placa})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-tesla-text">
-                    Kilometraje Registrado
+                    Kilometraje Actual
                   </label>
                   <Input
                     type="number"
-                    value={formData.kmRegistrado}
+                    value={isNaN(formData.kmRegistrado) ? '' : formData.kmRegistrado}
                     onChange={(e) =>
-                      setFormData({ ...formData, kmRegistrado: parseInt(e.target.value) || 0 })
+                      setFormData({ ...formData, kmRegistrado: parseInt(e.target.value) })
                     }
                     placeholder="Kilometraje"
                     className="mt-1"
                   />
                 </div>
 
+                {formData.tipo === 'REEMPLAZO_PIEZA' && (
+                  <div>
+                    <label className="block text-sm font-medium text-tesla-text">
+                      Pieza Reemplazada (Descripción)
+                    </label>
+                    <Input
+                      value={formData.piezaReemplazada || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, piezaReemplazada: e.target.value })
+                      }
+                      placeholder="Ej. Alternador, Bomba de agua"
+                      className="mt-1"
+                    />
+                  </div>
+                )}
+
+                {formData.tipo === 'CAMBIO_ACEITE' && (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium text-tesla-text">
+                        Próximo Cambio (Km)
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.proximoCambioKm === undefined || isNaN(formData.proximoCambioKm) ? '' : formData.proximoCambioKm}
+                        onChange={(e) =>
+                          setFormData({ ...formData, proximoCambioKm: parseInt(e.target.value) })
+                        }
+                        placeholder="Ej. 5000 más del actual"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-tesla-text">
+                        Próximo Cambio (Fecha)
+                      </label>
+                      <Input
+                        type="date"
+                        value={formData.proximoCambioFecha ? new Date(formData.proximoCambioFecha).toISOString().split('T')[0] : ''}
+                        onChange={(e) =>
+                          setFormData({ ...formData, proximoCambioFecha: e.target.value })
+                        }
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-tesla-text">
-                    Descripción
+                    Descripción General
                   </label>
                   <Input
                     value={formData.descripcion}
@@ -181,7 +253,7 @@ export default function ServiciosPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-tesla-text">
-                    Piezas Usadas
+                    Piezas/Productos de Stock Usados
                   </label>
                   <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
                     {productos.map((producto) => {
@@ -267,10 +339,21 @@ export default function ServiciosPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-tesla-text">
-                        {getVehicleInfo(servicio.vehiculoId)}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-tesla-text">
+                          {getVehicleInfo(servicio.vehiculoId)}
+                        </h3>
+                        <span className={`text-xs px-2 py-1 rounded-full ${servicio.tipo === 'CAMBIO_ACEITE' ? 'bg-blue-900 text-blue-200' :
+                          servicio.tipo === 'REEMPLAZO_PIEZA' ? 'bg-orange-900 text-orange-200' :
+                            'bg-gray-800 text-gray-200'
+                          }`}>
+                          {servicio.tipo?.replace('_', ' ') || 'GENERAL'}
+                        </span>
+                      </div>
                       <p className="text-sm text-gray-400">{servicio.descripcion}</p>
+                      {servicio.piezaReemplazada && (
+                        <p className="text-sm text-orange-400">Pieza: {servicio.piezaReemplazada}</p>
+                      )}
                       <div className="mt-2 flex gap-4">
                         <p className="text-sm">
                           <span className="text-gray-400">Fecha:</span>{' '}
