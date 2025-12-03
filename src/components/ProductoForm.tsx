@@ -30,11 +30,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
   onSubmit,
   isSubmitting,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ProductoFormData>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductoFormData>({
     resolver: zodResolver(productoSchema),
     defaultValues: producto,
   });
@@ -104,11 +100,24 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
         <label className="block text-sm font-medium text-tesla-text">
           SKU
         </label>
-        <Input
-          placeholder="SKU"
-          {...register('sku')}
-          className="mt-1"
-        />
+        <div className="flex gap-2">
+          <Input
+            placeholder="SKU"
+            {...register('sku')}
+            className="mt-1"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-1"
+            onClick={() => {
+              const randomSku = `SKU-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+              setValue('sku', randomSku);
+            }}
+          >
+            Generar
+          </Button>
+        </div>
         {errors.sku && (
           <p className="mt-1 text-xs text-tesla-accent">{errors.sku.message}</p>
         )}
